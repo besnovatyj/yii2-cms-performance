@@ -1,0 +1,81 @@
+<?php
+
+
+/*
+ * Copyright (c) 2026 Besnovatyj. Licensed under the MIT License.
+ */
+
+namespace Besnovatyj\Performance\migrations;
+
+use common\components\migration\BaseMigration;
+use Yii;
+use yii\db\Exception;
+
+class m250226_140030_create_performance_foreign_key_constraints extends BaseMigration
+{
+
+    /**
+     * @throws Exception
+     */
+    public function safeUp(): void
+    {
+        parent::safeUp();
+
+        Yii::$app->getDb()->createCommand("SET foreign_key_checks = 0")->execute();
+
+        // Изображения
+        $this->createFKs(
+            m250226_140010_create_performance_images_table::TABLE_NAME,
+            'performance_id',
+            m250226_140015_create_performance_performances_table::TABLE_NAME,
+            'id',
+            'CASCADE',
+            'CASCADE'
+        );
+
+        // Спектакли
+        $this->createFKs(
+            m250226_140015_create_performance_performances_table::TABLE_NAME,
+            'taxonomy_id',
+            m250226_140000_create_performance_taxonomies_table::TABLE_NAME,
+            'id',
+        );
+        $this->createFKs(
+            m250226_140015_create_performance_performances_table::TABLE_NAME,
+            'main_image_id',
+            m250226_140010_create_performance_images_table::TABLE_NAME,
+            'id',
+            'SET NULL',
+        );
+
+        // Связь с тегами
+        $this->createFKs(
+            m250226_140020_create_performance_tag_asgmt_table::TABLE_NAME,
+            'performance_id',
+            m250226_140015_create_performance_performances_table::TABLE_NAME,
+            'id',
+            'CASCADE',
+        );
+        $this->createFKs(
+            m250226_140020_create_performance_tag_asgmt_table::TABLE_NAME,
+            'tag_id',
+            m250226_140005_create_performance_tags_table::TABLE_NAME,
+            'id',
+            'CASCADE',
+        );
+
+        Yii::$app->db->createCommand('SET foreign_key_checks = 1')->execute();
+
+    }
+
+    public function safeDown(): void
+    {
+        // Отменяем действия по умолчанию,
+        // так как \common\components\migration\BaseMigration::safeDown() вызывает static::TABLE_NAME,
+        // которого в данной миграции не существует.
+        // Так же, \common\components\migration\BaseMigration::safeDown() при удалении таблиц сам удалит у них все индексы и внешние ключи.
+
+        // parent::safeDown();
+    }
+
+}
