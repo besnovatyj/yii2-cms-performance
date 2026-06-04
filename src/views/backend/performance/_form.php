@@ -74,7 +74,7 @@ use yii\web\View;
                             // TODO создавать папку при создании сущности. При удалении удалять.
                             $editorConfig = [];
                             $editorConfig['language'] = 'ru';
-                            $editorConfig['fmDefaultPath'] = '/origin/Performance/' . $performance->id;
+                            $editorConfig['fmDefaultPath'] = '/static/origin/Performance/' . $performance->id;
                             echo $form->field($model, 'description')->widget( CkeditorCustomWidget::class, $editorConfig);
                         }
                         ?>
@@ -86,7 +86,7 @@ use yii\web\View;
                             // TODO создавать папку при создании сущности. При удалении удалять.
                             $editorConfig = [];
                             $editorConfig['language'] = 'ru';
-                            $editorConfig['fmDefaultPath'] = '/origin/Performance/' . $performance->id;
+                            $editorConfig['fmDefaultPath'] = '/static/origin/Performance/' . $performance->id;
                             echo $form->field($model, 'production_group')->widget( CkeditorCustomWidget::class, $editorConfig);
                         }
                         ?>
@@ -98,7 +98,7 @@ use yii\web\View;
                             // TODO создавать папку при создании сущности. При удалении удалять.
                             $editorConfig = [];
                             $editorConfig['language'] = 'ru';
-                            $editorConfig['fmDefaultPath'] = '/origin/Performance/' . $performance->id;
+                            $editorConfig['fmDefaultPath'] = '/static/origin/Performance/' . $performance->id;
                             echo $form->field($model, 'actors')->widget( CkeditorCustomWidget::class, $editorConfig);
                         }
                         ?>
