@@ -5,7 +5,6 @@
  * Copyright (c) 2026 Besnovatyj. Licensed under the MIT License.
  */
 
-use Besnovatyj\Performance\forms\backend\TaxonomyForm;
 use Besnovatyj\TreeManager\Manager\TreeDataSource;
 use Besnovatyj\TreeManager\Manager\TreeWidget;
 use yii\helpers\Html;
@@ -48,10 +47,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     'toggleStatus' => Url::to(['/Performance/backend/taxonomy/toggle-status']),
                     'checkIntegrity' => Url::to(['/Performance/backend/taxonomy/check-integrity']),
                 ],
-//                'forms' => [
-//                    'createFormClass' => TaxonomyForm::class,
-//                    'updateFormClass' => TaxonomyForm::class,
-//                ],
                 'serverForms' => [
                     'enabled' => true,
                     'display' => 'modal',
