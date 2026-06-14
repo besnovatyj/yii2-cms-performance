@@ -13,7 +13,8 @@
   "minimum-stability": "stable",
   "extra": {
     "moduleClass": "Besnovatyj\\Performance\\Module",
-    "moduleId": "Performance"
+    "moduleId": "Performance",
+    "bescms": { "kind": "module" }
   },
   "keywords": [
     "yii2",
