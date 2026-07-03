@@ -16,7 +16,7 @@ use Besnovatyj\Performance\repositories\PerformanceRepository;
 use Besnovatyj\Performance\services\manage\PerformanceManageService;
 use Besnovatyj\Images\helpers\ImageActionsMap;
 use Besnovatyj\Performance\entities\performance\Image;
-use common\components\controller\ControllerTrait;
+use Besnovatyj\Kernel\controller\ControllerTrait;
 use Besnovatyj\Kernel\urlmanager\UrlManagerHelperTrait;
 use DomainException;
 use Exception;
