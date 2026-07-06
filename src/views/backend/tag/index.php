@@ -8,7 +8,7 @@
 use Besnovatyj\Backend\Widgets\grid\ActionColumn;
 use Besnovatyj\Performance\entities\Tag;
 use Besnovatyj\Performance\forms\backend\search\TagSearch;
-use modules\user\components\Helper;
+use Besnovatyj\User\components\Helper;
 use Besnovatyj\Backend\Widgets\pagination\LinkPager;
 use yii\data\ActiveDataProvider;
 use yii\helpers\Html;
