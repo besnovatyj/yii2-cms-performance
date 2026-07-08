@@ -5,7 +5,7 @@
  * Copyright (c) 2026 Besnovatyj. Licensed under the MIT License.
  */
 
-use Besnovatyj\File\widgets\CkeditorCustomWidget;
+use Besnovatyj\Editor\EditorWidget;
 use Besnovatyj\Performance\entities\performance\Performance;
 use Besnovatyj\Performance\forms\backend\performance\PerformanceForm;
 use yii\bootstrap5\ActiveForm;
@@ -75,7 +75,7 @@ use yii\web\View;
                             $editorConfig = [];
                             $editorConfig['language'] = 'ru';
                             $editorConfig['fmDefaultPath'] = '/static/origin/Performance/' . $performance->id;
-                            echo $form->field($model, 'description')->widget( CkeditorCustomWidget::class, $editorConfig);
+                            echo $form->field($model, 'description')->widget( EditorWidget::class, $editorConfig);
                         }
                         ?>
 
@@ -87,7 +87,7 @@ use yii\web\View;
                             $editorConfig = [];
                             $editorConfig['language'] = 'ru';
                             $editorConfig['fmDefaultPath'] = '/static/origin/Performance/' . $performance->id;
-                            echo $form->field($model, 'production_group')->widget( CkeditorCustomWidget::class, $editorConfig);
+                            echo $form->field($model, 'production_group')->widget( EditorWidget::class, $editorConfig);
                         }
                         ?>
 
@@ -99,7 +99,7 @@ use yii\web\View;
                             $editorConfig = [];
                             $editorConfig['language'] = 'ru';
                             $editorConfig['fmDefaultPath'] = '/static/origin/Performance/' . $performance->id;
-                            echo $form->field($model, 'actors')->widget( CkeditorCustomWidget::class, $editorConfig);
+                            echo $form->field($model, 'actors')->widget( EditorWidget::class, $editorConfig);
                         }
                         ?>
 
