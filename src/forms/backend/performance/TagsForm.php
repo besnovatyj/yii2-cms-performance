@@ -16,7 +16,7 @@ class TagsForm extends Model
 {
     public array $newTagsNames = [];
 
-    public function __construct(Performance $performance = null, $config = [])
+    public function __construct(?Performance $performance = null, $config = [])
     {
         if ($performance) {
             $this->newTagsNames = ArrayHelper::map($performance->tags, 'id', 'name');

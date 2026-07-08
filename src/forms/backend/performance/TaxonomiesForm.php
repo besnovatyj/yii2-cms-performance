@@ -16,7 +16,7 @@ class TaxonomiesForm extends Model
 {
     public int|null $main = null;
 
-    public function __construct(Performance $performances = null, $config = [])
+    public function __construct(?Performance $performances = null, $config = [])
     {
         if ($performances) {
             $this->main = $performances->taxonomy_id;
