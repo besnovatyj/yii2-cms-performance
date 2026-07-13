@@ -14,6 +14,10 @@ use Besnovatyj\Performance\Module;
  * Объявляется через `extra.config-plugin`, собирается modman в merge-plan и мёржится в рантайме.
  * Содержит регистрацию модуля. Меню (adminMenu) и миграции остаются вкладами modman. Значения берутся
  * из статических методов {@see Module} — единый источник, без дублирования.
+ *
+ * URL-правила фронтенда — вклад в `frontendUrlManager` группы `common` (см. README_Yii2_Modules.md).
+ * Перенесены из захардкоженного `frontend/config/url-manager.php`; первый сегмент роута капитализирован
+ * под реальный id модуля 'Performance'. Гейтятся modman.
  */
 return [
     'modules' => [
@@ -22,5 +26,15 @@ return [
             Module::moduleConfig(),
             ['version' => Module::moduleVersion()],
         ),
+    ],
+    'components' => [
+        'frontendUrlManager' => [
+            'rules' => [
+                'performance'                                    => 'Performance/performance/index',
+                'performance/taxonomy/<slug:[\w\-]+>/<page:\d+>' => 'Performance/performance/taxonomy', // <page> — пагинация
+                'performance/taxonomy/<slug:[\w\-]+>'            => 'Performance/performance/taxonomy',
+                'performance/view/<uuid:[\w\-]+>'                => 'Performance/performance/view',
+            ],
+        ],
     ],
 ];
