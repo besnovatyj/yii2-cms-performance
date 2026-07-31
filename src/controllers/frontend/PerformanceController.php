@@ -40,7 +40,7 @@ class PerformanceController extends Controller
         $dataProvider = $this->performances->getAll();
         $taxonomy = $this->taxonomies->getRoot();
 
-        return $this->render('/frontend/Performance/index', [
+        return $this->render('index', [
             'taxonomy' => $taxonomy,
             'dataProvider' => $dataProvider,
         ]);
@@ -59,7 +59,7 @@ class PerformanceController extends Controller
 
         $dataProvider = $this->performances->getAllByTaxonomy($taxonomy);
 
-        return $this->render('/frontend/Performance/taxonomy', [
+        return $this->render('taxonomy', [
             'taxonomy' => $taxonomy,
             'dataProvider' => $dataProvider,
         ]);
@@ -78,7 +78,7 @@ class PerformanceController extends Controller
 
         $dataProvider = $this->performances->getAllByTag($tag);
 
-        return $this->render('/frontend/Performance/tag', [
+        return $this->render('tag', [
             'tag' => $tag,
             'dataProvider' => $dataProvider,
         ]);
@@ -95,7 +95,7 @@ class PerformanceController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
 
-        return $this->render('/frontend/Performance/view', [
+        return $this->render('view', [
             'performance' => $performance,
         ]);
     }
