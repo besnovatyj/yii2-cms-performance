@@ -13,7 +13,8 @@ use Besnovatyj\Contracts\module\ProvidesDirectories;
 use Besnovatyj\Contracts\module\ProvidesMigrations;
 use Besnovatyj\Contracts\menu\MenuTarget;
 use Besnovatyj\Contracts\menu\MenuTargetProvider;
-use Besnovatyj\Performance\readModels\TaxonomyReadRepository;
+use Besnovatyj\Performance\entities\Taxonomy;
+use Besnovatyj\TreeManager\Manager\TreeQueryScope;
 
 class Module extends CmsModule implements
     DeclaresModule, ProvidesAdminMenu,
@@ -65,12 +66,7 @@ class Module extends CmsModule implements
      */
     private function taxonomySlugMap(): array
     {
-        $map = [];
-        foreach ((new TaxonomyReadRepository())->getAll() as $taxonomy) {
-            $prefix = $taxonomy->depth > 0 ? str_repeat('— ', (int)$taxonomy->depth) : '';
-            $map[$taxonomy->slug] = $prefix . $taxonomy->name;
-        }
-        return $map;
+        return (new TreeQueryScope(Taxonomy::class))->dropdownTree(keyAttribute: 'slug', indent: '— ');
     }
 
 }
