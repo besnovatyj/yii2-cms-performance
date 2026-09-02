@@ -41,7 +41,15 @@
     "yiisoft/yii2-bootstrap5": "~2.0.0",
     "besnovatyj/yii2-cms-meta": "^1.0",
     "besnovatyj/yii2-cms-editor": "^1.0",
-    "besnovatyj/yii2-cms-pessimistic-lock-behavior": "^1.0"
+    "besnovatyj/yii2-cms-datetime-widgets": "^1.0",
+    "besnovatyj/yii2-cms-pessimistic-lock-behavior": "^1.0",
+    "besnovatyj/yii2-cms-backend-widgets": "^1.0",
+    "besnovatyj/yii2-cms-forms": "^1.0",
+    "besnovatyj/yii2-cms-helpers": "^1.0",
+    "besnovatyj/yii2-cms-images": "^1.0",
+    "besnovatyj/yii2-cms-select2-widget": "^1.0",
+    "besnovatyj/yii2-cms-smart-domain-events": "^1.0",
+    "besnovatyj/yii2-cms-tree-manager": "^1.0"
   },
   "require-dev": {
     "roave/security-advisories": "dev-latest"
