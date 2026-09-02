@@ -37,6 +37,7 @@ use yii\db\StaleObjectException;
  * @property string $production_group
  * @property string $actors
  * @property string $age_limit
+ * @property string|null $premiere_date
  * @property integer $status
  *
  * @property Meta $meta
@@ -57,7 +58,7 @@ class Performance extends ActiveRecord implements AggregateRoot
 
     public Meta $meta;
 
-    public static function create($taxonomyId, $title, $author, $genre, $description, $production_group, $actors, $age_limit, $status, Meta $meta): self
+    public static function create($taxonomyId, $title, $author, $genre, $description, $production_group, $actors, $age_limit, $premiere_date, $status, Meta $meta): self
     {
         $performance = new static();
         $performance->taxonomy_id = $taxonomyId;
@@ -68,13 +69,14 @@ class Performance extends ActiveRecord implements AggregateRoot
         $performance->production_group = $production_group;
         $performance->actors = $actors;
         $performance->age_limit = $age_limit;
+        $performance->premiere_date = $premiere_date;
         $performance->status = $status;
         $performance->created_at = new DateTimeImmutable()->format('Y.m.d H:i:s');
         $performance->meta = $meta;
         return $performance;
     }
 
-    public function edit($title, $author, $genre, $description, $production_group, $actors, $age_limit, $status, Meta $meta): void
+    public function edit($title, $author, $genre, $description, $production_group, $actors, $age_limit, $premiere_date, $status, Meta $meta): void
     {
         $this->title = $title;
         $this->author = $author;
@@ -83,6 +85,7 @@ class Performance extends ActiveRecord implements AggregateRoot
         $this->production_group = $production_group;
         $this->actors = $actors;
         $this->age_limit = $age_limit;
+        $this->premiere_date = $premiere_date;
         $this->status = $status;
         $this->meta = $meta;
         $this->updated_at = new DateTimeImmutable()->format('Y.m.d H:i:s');

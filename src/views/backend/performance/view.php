@@ -65,6 +65,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'author',
                                 'genre',
                                 'age_limit',
+                                'premiere_date:date',
                                 'created_at:datetime',
                                 'updated_at:datetime',
                                 [

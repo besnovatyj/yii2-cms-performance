@@ -5,6 +5,7 @@
  * Copyright (c) 2026 Besnovatyj. Licensed under the MIT License.
  */
 
+use Besnovatyj\DateTime\DateTimeWidget;
 use Besnovatyj\Editor\EditorWidget;
 use Besnovatyj\Performance\entities\performance\Performance;
 use Besnovatyj\Performance\forms\backend\performance\PerformanceForm;
@@ -39,6 +40,15 @@ use yii\web\View;
                         <?= $form->field($model, 'author')->textInput(['maxlength' => true, 'class' => 'form-control']) ?>
                         <?= $form->field($model, 'genre')->textInput(['maxlength' => true, 'class' => 'form-control']) ?>
                         <?= $form->field($model, 'age_limit')->textInput(['maxlength' => true, 'class' => 'form-control']) ?>
+                        <?= $form->field($model, 'premiere_date')->widget(DateTimeWidget::class, [
+                            'showTime' => false,
+                            'valueFormat' => 'Y-m-d',
+                            'clearable' => true,
+                            'options' => [
+                                'data-locale' => 'ru-RU',
+                                'data-week-starts-on' => '1',
+                            ],
+                        ]) ?>
                         <?= $form->field($model, 'status')->dropDownList($model->statusList(), ['prompt' => 'Не выбрано', 'class' => 'custom-select']) ?>
                         <?= $form->field($model->taxonomies, 'main')->dropDownList($model->taxonomies->taxonomiesList(), ['prompt' => 'Не выбрано', 'class' => 'custom-select'])->label('Taxonomy') ?>
                     </div>

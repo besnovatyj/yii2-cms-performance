@@ -56,6 +56,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     'value' => 'taxonomy.name',
                 ],
                 [
+                    'attribute' => 'premiere_date',
+                    'format' => 'date',
+                ],
+                [
                     'attribute' => 'status',
                     'filter' => $searchModel->statusList(),
                     'value' => function (Performance $model) {

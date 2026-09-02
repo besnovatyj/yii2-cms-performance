@@ -30,16 +30,6 @@ class PerformanceReadRepository
         return Performance::find()->active()->count();
     }
 
-    public function getAllByRange(int $offset, int $limit): array
-    {
-        return Performance::find()->alias('p')->active('p')->orderBy(['sort' => SORT_ASC])->limit($limit)->offset($offset)->all();
-    }
-
-    public function getAllIterator(): iterable
-    {
-        return Performance::find()->alias('p')->active('p')->with('mainImage', 'brand')->each();
-    }
-
     public function getAll(): DataProviderInterface
     {
         $query = Performance::find()->alias('p')->active('p')->with('mainImage');
@@ -86,8 +76,13 @@ class PerformanceReadRepository
         return new ActiveDataProvider([
             'query' => $query,
             'sort' => [
-                'defaultOrder' => ['id' => SORT_DESC],
+                // Спектакли показываем от самой свежей премьеры; записи без даты уходят в конец списка.
+                'defaultOrder' => ['premiere_date' => SORT_DESC],
                 'attributes' => [
+                    'premiere_date' => [
+                        'asc' => ['p.premiere_date' => SORT_ASC, 'p.id' => SORT_DESC],
+                        'desc' => ['p.premiere_date' => SORT_DESC, 'p.id' => SORT_DESC],
+                    ],
                     'id' => [
                         'asc' => ['p.id' => SORT_ASC],
                         'desc' => ['p.id' => SORT_DESC],

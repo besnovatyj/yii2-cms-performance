@@ -68,6 +68,7 @@ class PerformanceManageService
             $form->production_group,
             $form->actors,
             $form->age_limit,
+            $form->premiere_date,
             $form->status,
             new Meta(
                 $form->meta->title,
@@ -106,6 +107,7 @@ class PerformanceManageService
             $form->production_group,
             $form->actors,
             $form->age_limit,
+            $form->premiere_date,
             $form->status,
             new Meta(
                 $form->meta->title,

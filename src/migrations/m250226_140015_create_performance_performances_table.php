@@ -49,6 +49,8 @@ class m250226_140015_create_performance_performances_table extends BaseMigration
                 ->comment('Занятые актёры'),
             'age_limit' => $this->string(255)->notNull()
                 ->comment('Возрастной ценз'),
+            'premiere_date' => $this->date()->null()
+                ->comment('Дата премьеры'),
             'main_image_id' => $this->integer(10)->null()
                 ->comment('Идентификатор основной фотографии'),
             'status' => $this->smallInteger(1)->notNull()->defaultValue(0)
@@ -60,6 +62,7 @@ class m250226_140015_create_performance_performances_table extends BaseMigration
 
         $this->createIndexes(static::TABLE_NAME, 'taxonomy_id');
         $this->createIndexes(static::TABLE_NAME, 'main_image_id');
+        $this->createIndexes(static::TABLE_NAME, 'premiere_date');
 
         parent::safeUp();
     }

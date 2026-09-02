@@ -20,6 +20,11 @@ $url = Url::to(['view', 'id' => $model->id]);
          title="<?= Html::encode($model->title) ?>">
     <div class="card-body d-flex flex-column">
         <h2 class="h5 card-title"><?= Html::encode($model->title) ?></h2>
+        <?php if (!empty($model->premiere_date)): ?>
+            <div class="text-secondary small mb-2">
+                Премьера: <?= Yii::$app->formatter->asDate($model->premiere_date, 'long') ?>
+            </div>
+        <?php endif; ?>
         <div class="d-flex flex-wrap gap-2 mb-3">
             <?php if (isset($model->taxonomy->name)): ?>
                 <span class="badge text-bg-secondary"><?= Html::encode($model->taxonomy->name) ?></span>

@@ -25,6 +25,7 @@ class PerformanceForm extends CompositeForm
     public string $production_group = '';
     public string $actors = '';
     public string $age_limit = '';
+    public string|null $premiere_date = null;
     public int|null $status = null;
 
     public function __construct(?Performance $performance = null, $config = [])
@@ -37,6 +38,7 @@ class PerformanceForm extends CompositeForm
             $this->production_group = $performance->production_group;
             $this->actors = $performance->actors;
             $this->age_limit = $performance->age_limit;
+            $this->premiere_date = $performance->premiere_date;
             $this->status = $performance->status;
             $this->meta = new MetaForm($performance->meta);
             $this->taxonomies = new TaxonomiesForm($performance);
@@ -55,6 +57,7 @@ class PerformanceForm extends CompositeForm
             [['title', 'age_limit', 'status',], 'required'],
             [['title', 'author', 'genre', 'age_limit',], 'string', 'max' => 255],
             [['description', 'production_group', 'actors',], 'string'],
+            ['premiere_date', 'date', 'format' => 'php:Y-m-d'],
             ['status', 'integer'],
             ['status', 'in', 'range' => [Performance::STATUS_DRAFT, Performance::STATUS_ACTIVE]],
         ];

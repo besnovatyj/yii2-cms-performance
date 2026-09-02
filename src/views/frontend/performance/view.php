@@ -55,6 +55,9 @@ if (Yii::$app->getModule('Config') instanceof Module) {
         <?php if (!empty($performance->genre)): ?>
             <div class="text-secondary"><?= Html::encode($performance->genre) ?></div>
         <?php endif; ?>
+        <?php if (!empty($performance->premiere_date)): ?>
+            <div class="text-secondary">Премьера: <?= Yii::$app->formatter->asDate($performance->premiere_date, 'long') ?></div>
+        <?php endif; ?>
     </header>
 
     <div class="accordion" id="performance-accordion">
