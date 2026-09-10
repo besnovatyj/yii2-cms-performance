@@ -20,9 +20,13 @@ class TaxonomyReadRepository
         $this->treeScope = new TreeQueryScope(Taxonomy::class);
     }
 
+    /**
+     * Корневой раздел дерева — только видимый: корень такой же полноценный раздел, как
+     * остальные, и снятый с публикации показываться не должен.
+     */
     public function getRoot(): ?Taxonomy
     {
-        return Taxonomy::find()->andWhere(['depth' => 0])->one();
+        return Taxonomy::find()->visible()->andWhere(['depth' => 0])->one();
     }
 
     /**
@@ -30,17 +34,21 @@ class TaxonomyReadRepository
      */
     public function getAll(): array
     {
-        return Taxonomy::find()->orderBy('lft')->all();
+        return Taxonomy::find()->visible()->orderBy('lft')->all();
     }
 
     public function find(int $id): ?Taxonomy
     {
-        return Taxonomy::find()->andWhere(['id' => $id])->one();
+        return Taxonomy::find()->visible()->andWhere(['id' => $id])->one();
     }
 
+    /**
+     * Раздел по slug для фронтенда — только доступный анонимному посетителю: снятый с
+     * публикации (или лежащий в скрытой ветке) не должен открываться по прямой ссылке.
+     */
     public function findBySlug($slug): ?Taxonomy
     {
-        return Taxonomy::find()->andWhere(['slug' => $slug])->one();
+        return Taxonomy::find()->visible()->andWhere(['slug' => $slug])->one();
     }
 
     /**
@@ -68,7 +76,7 @@ class TaxonomyReadRepository
 
     public function getTreeWithSubsOf(?Taxonomy $taxonomy = null): array
     {
-        $query = Taxonomy::find()->andWhere(['status' => 1])->orderBy(['lft' => SORT_ASC]);
+        $query = Taxonomy::find()->visible()->orderBy(['lft' => SORT_ASC]);
         if ($taxonomy) {
             $parents = $this->treeScope->parentsQuery($taxonomy)->all();
 

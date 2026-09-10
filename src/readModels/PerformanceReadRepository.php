@@ -28,18 +28,18 @@ class PerformanceReadRepository
 
     public function count(): int
     {
-        return Performance::find()->active()->count();
+        return Performance::find()->visible()->count();
     }
 
     public function getAll(): DataProviderInterface
     {
-        $query = Performance::find()->alias('p')->active('p')->with('mainImage');
+        $query = Performance::find()->alias('p')->visible('p')->with('mainImage');
         return $this->getProvider($query);
     }
 
     public function getAllByTaxonomy(Taxonomy $taxonomy): DataProviderInterface
     {
-        $query = Performance::find()->alias('p')->active('p')->with('mainImage', 'taxonomy');
+        $query = Performance::find()->alias('p')->visible('p')->with('mainImage', 'taxonomy');
         $ids = $this->treeScope->descendantIds($taxonomy, andSelf: true);
         $query->andWhere(['p.taxonomy_id' => $ids]);
         $query->groupBy('p.id');
@@ -48,7 +48,7 @@ class PerformanceReadRepository
 
     public function getAllByTag(Tag $tag): DataProviderInterface
     {
-        $query = Performance::find()->alias('p')->active('p')->with('mainImage');
+        $query = Performance::find()->alias('p')->visible('p')->with('mainImage');
         $query->joinWith(['tagAssignments ta'], false);
         $query->andWhere(['ta.tag_id' => $tag->id]);
         $query->groupBy('p.id');
@@ -62,13 +62,13 @@ class PerformanceReadRepository
 
     public function getRand($limit): array
     {
-        return Performance::find()->active()->orderBy(new Expression('rand()'))->limit($limit)->all();
+        return Performance::find()->visible()->orderBy(new Expression('rand()'))->limit($limit)->all();
     }
 
     public function find($id): ?Performance
     {
         /** @var $performances Performance */
-        $performances = Performance::find()->active()->andWhere(['id' => $id])->one();
+        $performances = Performance::find()->visible()->andWhere(['id' => $id])->one();
         return $performances;
     }
 
