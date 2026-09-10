@@ -13,13 +13,17 @@ use Besnovatyj\Contracts\module\ProvidesDirectories;
 use Besnovatyj\Contracts\module\ProvidesMigrations;
 use Besnovatyj\Contracts\menu\MenuTarget;
 use Besnovatyj\Contracts\menu\MenuTargetProvider;
+use Besnovatyj\Contracts\search\SearchSource;
+use Besnovatyj\Contracts\search\SearchableProvider;
 use Besnovatyj\Performance\entities\Taxonomy;
+use Besnovatyj\Performance\readModels\PerformanceReadRepository;
+use Besnovatyj\Performance\readModels\TaxonomyReadRepository;
 use Besnovatyj\TreeManager\Manager\TreeQueryScope;
 
 class Module extends CmsModule implements
     DeclaresModule, ProvidesAdminMenu,
     ProvidesDirectories,
-    ProvidesMigrations, MenuTargetProvider
+    ProvidesMigrations, MenuTargetProvider, SearchableProvider
 {
     public const bool EDITABLE = true;
     public const string VERSION = '1.0.0';
@@ -67,6 +71,32 @@ class Module extends CmsModule implements
     private function taxonomySlugMap(): array
     {
         return (new TreeQueryScope(Taxonomy::class))->dropdownTree(keyAttribute: 'slug', indent: '— ');
+    }
+
+    /**
+     * Контент модуля для сквозного поиска. Реализация {@see SearchableProvider}; вызывается
+     * только модулем поиска, если он установлен.
+     *
+     * @return SearchSource[]
+     */
+    public function searchSources(): array
+    {
+        return [
+            new SearchSource('performance.performance', 'Спектакли', 1.0, 'bi bi-mask'),
+            new SearchSource('performance.taxonomy', 'Разделы афиши', 0.7, 'bi bi-diagram-3'),
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function searchDocuments(string $type): iterable
+    {
+        return match ($type) {
+            'performance.performance' => (new PerformanceReadRepository())->searchDocuments(),
+            'performance.taxonomy' => (new TaxonomyReadRepository())->searchDocuments(),
+            default => [],
+        };
     }
 
 }

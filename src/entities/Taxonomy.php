@@ -8,6 +8,7 @@
 namespace Besnovatyj\Performance\entities;
 
 use Besnovatyj\Performance\entities\performance\Performance;
+use Besnovatyj\Performance\entities\queries\TaxonomyQuery;
 use Besnovatyj\Meta\MetaBehavior;
 use Besnovatyj\Meta\Meta;
 use Besnovatyj\TreeManager\Manager\entities\Node;
@@ -31,6 +32,12 @@ use yii\db\ActiveQuery;
  */
 class Taxonomy extends Node
 {
+    /** Раздел снят с публикации: не показывается на фронте и не участвует в поиске. */
+    public const int STATUS_INACTIVE = 0;
+
+    /** Раздел опубликован. */
+    public const int STATUS_ACTIVE = 1;
+
     public Meta $meta;
 
     public static function create($name, $slug, $description, Meta $meta): self
@@ -61,6 +68,14 @@ class Taxonomy extends Node
         $this->status = !$this->status;
     }
 
+    /**
+     * Опубликован ли раздел сам по себе (без учёта предков — см. {@see TaxonomyQuery::visible()}).
+     */
+    public function isActive(): bool
+    {
+        return (int)$this->status === self::STATUS_ACTIVE;
+    }
+
     public function getPerformances(): ActiveQuery
     {
         return $this->hasMany(Performance::class, ['taxonomy_id' => 'id']);
@@ -89,5 +104,10 @@ class Taxonomy extends Node
         return [
             self::SCENARIO_DEFAULT => self::OP_ALL,
         ];
+    }
+
+    public static function find(): TaxonomyQuery
+    {
+        return new TaxonomyQuery(static::class);
     }
 }

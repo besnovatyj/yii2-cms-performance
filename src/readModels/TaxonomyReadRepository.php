@@ -7,6 +7,7 @@
 
 namespace Besnovatyj\Performance\readModels;
 
+use Besnovatyj\Contracts\search\SearchDocument;
 use Besnovatyj\Performance\entities\Taxonomy;
 use Besnovatyj\TreeManager\Manager\TreeQueryScope;
 
@@ -40,6 +41,29 @@ class TaxonomyReadRepository
     public function findBySlug($slug): ?Taxonomy
     {
         return Taxonomy::find()->andWhere(['slug' => $slug])->one();
+    }
+
+    /**
+     * Разделы афиши для сквозного поиска — только видимые целиком, вместе с предками
+     * ({@see \Besnovatyj\Performance\entities\queries\TaxonomyQuery::visible()}).
+     *
+     * @return iterable<SearchDocument>
+     */
+    public function searchDocuments(): iterable
+    {
+        $query = Taxonomy::find()->visible()->orderBy(['id' => SORT_ASC]);
+
+        /** @var Taxonomy $taxonomy */
+        foreach ($query->each(100) as $taxonomy) {
+            yield new SearchDocument(
+                type: 'performance.taxonomy',
+                entityId: (int)$taxonomy->id,
+                route: '/Performance/performance/taxonomy',
+                params: ['slug' => $taxonomy->slug],
+                title: (string)$taxonomy->name,
+                text: (string)$taxonomy->description,
+            );
+        }
     }
 
     public function getTreeWithSubsOf(?Taxonomy $taxonomy = null): array

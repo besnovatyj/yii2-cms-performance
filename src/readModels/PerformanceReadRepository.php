@@ -7,6 +7,7 @@
 
 namespace Besnovatyj\Performance\readModels;
 
+use Besnovatyj\Contracts\search\SearchDocument;
 use Besnovatyj\Performance\entities\Taxonomy;
 use Besnovatyj\Performance\entities\performance\Performance;
 use Besnovatyj\Performance\entities\Tag;
@@ -69,6 +70,67 @@ class PerformanceReadRepository
         /** @var $performances Performance */
         $performances = Performance::find()->active()->andWhere(['id' => $id])->one();
         return $performances;
+    }
+
+    /**
+     * Спектакли для сквозного поиска — только публично доступные ({@see PerformanceQuery::visible()}).
+     *
+     * Генератор с чтением пачками: полная переиндексация не должна держать в памяти всю афишу.
+     * Поля отдаются СЫРЫМИ — нормализация текста едина для всех модулей и выполняется модулем поиска.
+     *
+     * В ключевые слова уходят реквизиты постановки: автор, жанр, состав, коллектив, раздел и теги.
+     * Их ищут наравне с названием («Чехов», «комедия», фамилия артиста), но в заголовке карточки
+     * им не место.
+     *
+     * @return iterable<SearchDocument>
+     */
+    public function searchDocuments(): iterable
+    {
+        $query = Performance::find()->alias('p')->visible('p')
+            ->with(['tags', 'taxonomy', 'mainImage'])
+            ->orderBy(['p.id' => SORT_ASC]);
+
+        /** @var Performance $performance */
+        foreach ($query->each(100) as $performance) {
+            $keywords = array_map(static fn (Tag $tag): string => (string)$tag->name, $performance->tags);
+
+            $keywords[] = $performance->author;
+            $keywords[] = $performance->genre;
+            $keywords[] = $performance->production_group;
+            $keywords[] = $performance->actors;
+
+            if ($performance->taxonomy !== null) {
+                $keywords[] = (string)$performance->taxonomy->name;
+            }
+
+            yield new SearchDocument(
+                type: 'performance.performance',
+                entityId: (int)$performance->id,
+                route: '/Performance/performance/view',
+                params: ['id' => (int)$performance->id],
+                title: (string)$performance->title,
+                text: (string)$performance->description,
+                keywords: implode(' ', array_filter($keywords)),
+                // Для спектакля осмысленна дата премьеры, а не дата записи в базе; обе — строковые
+                // колонки DATE/DATETIME, поэтому только strtotime() (приведение (int) дало бы год).
+                date: $this->performanceTimestamp($performance),
+                image: $performance->mainImage?->getThumbUrl('file', 'frontend_list'),
+            );
+        }
+    }
+
+    /**
+     * Дата спектакля для карточки выдачи и сортировки по свежести, в виде Unix-timestamp.
+     */
+    private function performanceTimestamp(Performance $performance): ?int
+    {
+        foreach ([$performance->premiere_date, $performance->created_at] as $value) {
+            if ($value !== null && $value !== '' && ($timestamp = strtotime((string)$value)) !== false) {
+                return $timestamp;
+            }
+        }
+
+        return null;
     }
 
     private function getProvider(ActiveQuery $query): ActiveDataProvider
