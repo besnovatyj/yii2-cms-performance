@@ -7,14 +7,14 @@
 
 namespace Besnovatyj\Performance\forms\backend\search;
 
+use Besnovatyj\Forms\BaseForm;
 use Besnovatyj\Performance\entities\Taxonomy;
 use Besnovatyj\Performance\helpers\PerformanceHelper;
 use Besnovatyj\TreeManager\Manager\TreeQueryScope;
-use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use Besnovatyj\Performance\entities\performance\Performance;
 
-class PerformanceSearch extends Model
+class PerformanceSearch extends BaseForm
 {
     public int|null $id = null;
     public int|null $taxonomy_id = null;
