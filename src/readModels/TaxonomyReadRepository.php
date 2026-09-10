@@ -8,6 +8,7 @@
 namespace Besnovatyj\Performance\readModels;
 
 use Besnovatyj\Contracts\search\SearchDocument;
+use Besnovatyj\Contracts\sitemap\SitemapUrl;
 use Besnovatyj\Performance\entities\Taxonomy;
 use Besnovatyj\TreeManager\Manager\TreeQueryScope;
 
@@ -91,5 +92,32 @@ class TaxonomyReadRepository
         }
 
         return $query->all();
+    }
+
+
+    /**
+     * Видимые разделы афиши для карты сайта.
+     *
+     * Обход в порядке дерева (`tree`, `lft`) и глубина узла отдаются как есть: отступ на
+     * человеческой карте — забота представления, а не провайдера.
+     *
+     * Отпечатка свежести у разделов нет: колонок времени в дереве не заведено. Разделов немного,
+     * полный обход дёшев.
+     *
+     * @return iterable<SitemapUrl>
+     */
+    public function sitemapUrls(): iterable
+    {
+        $query = Taxonomy::find()->visible()->orderBy(['tree' => SORT_ASC, 'lft' => SORT_ASC]);
+
+        /** @var Taxonomy $taxonomy */
+        foreach ($query->each(200) as $taxonomy) {
+            yield new SitemapUrl(
+                route: '/Performance/performance/taxonomy',
+                params: ['slug' => $taxonomy->slug],
+                title: (string)$taxonomy->name,
+                depth: (int)$taxonomy->depth,
+            );
+        }
     }
 }

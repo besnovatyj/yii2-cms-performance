@@ -15,6 +15,11 @@ use Besnovatyj\Contracts\menu\MenuTarget;
 use Besnovatyj\Contracts\menu\MenuTargetProvider;
 use Besnovatyj\Contracts\search\SearchSource;
 use Besnovatyj\Contracts\search\SearchableProvider;
+use Besnovatyj\Contracts\sitemap\ChangeFrequency;
+use Besnovatyj\Contracts\sitemap\SitemapFreshness;
+use Besnovatyj\Contracts\sitemap\SitemapProvider;
+use Besnovatyj\Contracts\sitemap\SitemapSection;
+use Besnovatyj\Contracts\sitemap\SitemapUrl;
 use Besnovatyj\Performance\entities\Taxonomy;
 use Besnovatyj\Performance\readModels\PerformanceReadRepository;
 use Besnovatyj\Performance\readModels\TaxonomyReadRepository;
@@ -23,7 +28,8 @@ use Besnovatyj\TreeManager\Manager\TreeQueryScope;
 class Module extends CmsModule implements
     DeclaresModule, ProvidesAdminMenu,
     ProvidesDirectories,
-    ProvidesMigrations, MenuTargetProvider, SearchableProvider
+    ProvidesMigrations, MenuTargetProvider, SearchableProvider,
+    SitemapProvider, SitemapFreshness
 {
     public const bool EDITABLE = true;
     public const string VERSION = '1.0.0';
@@ -99,4 +105,83 @@ class Module extends CmsModule implements
         };
     }
 
+
+    /**
+     * Разделы карты сайта. Реализация {@see SitemapProvider}; вызывается только модулем карты,
+     * если он установлен.
+     *
+     * Разделов два, и это не дублирование: «Афиша» — навигационная ветка (список и его разделы),
+     * «Спектакли» — сами постановки. Каждый режется в свой файл, включается и взвешивается
+     * отдельно, а на человеческой карте даёт свой блок.
+     *
+     * @return SitemapSection[]
+     */
+    public function sitemapSections(): array
+    {
+        return [
+            new SitemapSection(
+                key: 'performance.taxonomy',
+                label: 'Афиша',
+                changeFrequency: ChangeFrequency::Weekly,
+                priority: 0.7,
+                order: 50,
+                icon: 'bi bi-diagram-3',
+            ),
+            new SitemapSection(
+                key: 'performance.performance',
+                label: 'Спектакли',
+                changeFrequency: ChangeFrequency::Monthly,
+                priority: 0.7,
+                order: 55,
+                icon: 'bi bi-mask',
+            ),
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function sitemapUrls(string $section): iterable
+    {
+        return match ($section) {
+            'performance.performance' => (new PerformanceReadRepository())->sitemapUrls(),
+            'performance.taxonomy' => $this->taxonomySitemapUrls(),
+            default => [],
+        };
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * Отпечаток есть только у постановок: в дереве разделов колонок времени нет
+     * (см. {@see TaxonomyReadRepository::sitemapUrls()}).
+     */
+    public function sitemapRevision(string $section): ?string
+    {
+        return match ($section) {
+            'performance.performance' => (new PerformanceReadRepository())->sitemapRevision(),
+            default => null,
+        };
+    }
+
+    /**
+     * Разделы афиши, а перед ними — сам список.
+     *
+     * Список — корень ветки и для робота, и для читателя: на человеческой карте он открывает блок,
+     * в XML это обычный адрес с высоким приоритетом. Отдельным разделом карты его заводить незачем —
+     * раздел из одного адреса только засоряет и настройки, и индекс файлов.
+     *
+     * @return iterable<SitemapUrl>
+     */
+    private function taxonomySitemapUrls(): iterable
+    {
+        yield new SitemapUrl(
+            route: '/Performance/performance/index',
+            title: 'Афиша',
+            changeFrequency: ChangeFrequency::Weekly,
+            priority: 0.9,
+        );
+
+        yield from (new TaxonomyReadRepository())->sitemapUrls();
+    }
 }
