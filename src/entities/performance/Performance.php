@@ -11,7 +11,9 @@ use Besnovatyj\Helpers\FilesystemHelper;
 use Besnovatyj\Meta\MetaBehavior;
 use Besnovatyj\Performance\entities\Taxonomy;
 use Besnovatyj\Performance\entities\performance\queries\PerformanceQuery;
-use Besnovatyj\Performance\entities\Tag;
+use Besnovatyj\Tags\entities\Tag;
+use Besnovatyj\Tags\entities\TagAssignment;
+use Besnovatyj\Tags\entities\TaggableEntityTrait;
 use Besnovatyj\PessimisticLock\PessimisticLockBehavior;
 use DateTimeImmutable;
 use DomainException;
@@ -52,6 +54,7 @@ use yii\db\StaleObjectException;
 class Performance extends ActiveRecord implements AggregateRoot
 {
     use EventTrait;
+    use TaggableEntityTrait;
 
     public const int STATUS_DRAFT = 0;
     public const int STATUS_ACTIVE = 1;
@@ -129,6 +132,15 @@ class Performance extends ActiveRecord implements AggregateRoot
 
     // <editor-fold desc="Tags">
     // Tag assignment methods moved to PerformanceManageService
+
+    /**
+     * Ключ спектакля в общем словаре тегов (модуль Tags); тот же — в контрактах поиска и карты сайта.
+     * Связи `tagAssignments`/`tags` даёт {@see TaggableEntityTrait}.
+     */
+    public static function tagType(): string
+    {
+        return 'performance.performance';
+    }
     // </editor-fold>
 
     // <editor-fold desc="Images">
@@ -146,16 +158,6 @@ class Performance extends ActiveRecord implements AggregateRoot
     public function getTaxonomy(): ActiveQuery
     {
         return $this->hasOne(Taxonomy::class, ['id' => 'taxonomy_id']);
-    }
-
-    public function getTagAssignments(): ActiveQuery
-    {
-        return $this->hasMany(TagAssignment::class, ['performance_id' => 'id']);
-    }
-
-    public function getTags(): ActiveQuery
-    {
-        return $this->hasMany(Tag::class, ['id' => 'tag_id'])->via('tagAssignments');
     }
 
     public function getImages(): ActiveQuery

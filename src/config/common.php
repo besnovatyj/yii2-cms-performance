@@ -31,6 +31,7 @@ return [
         'frontendUrlManager' => [
             'rules' => [
                 'performance'                                    => 'Performance/performance/index',
+                'performance/tag/<slug:[a-z][\w\-]*>'            => 'Performance/performance/tag', // slug с буквы — конвенция SlugValidator (модуль Tags)
                 'performance/taxonomy/<slug:[\w\-]+>/<page:\d+>' => 'Performance/performance/taxonomy', // <page> — пагинация
                 'performance/taxonomy/<slug:[\w\-]+>'            => 'Performance/performance/taxonomy',
                 'performance/view/<uuid:[\w\-]+>'                => 'Performance/performance/view',

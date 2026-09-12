@@ -8,6 +8,7 @@
 namespace Besnovatyj\Performance\forms\backend\performance;
 
 use Besnovatyj\Forms\CompositeForm;
+use Besnovatyj\Tags\forms\backend\TagsForm;
 use Besnovatyj\Meta\MetaForm;
 use Besnovatyj\Performance\entities\performance\Performance;
 
@@ -42,7 +43,7 @@ class PerformanceForm extends CompositeForm
             $this->status = $performance->status;
             $this->meta = new MetaForm($performance->meta);
             $this->taxonomies = new TaxonomiesForm($performance);
-            $this->tags = new TagsForm($performance);
+            $this->tags = new TagsForm($performance->tags);
         } else {
             $this->meta = new MetaForm();
             $this->taxonomies = new TaxonomiesForm();

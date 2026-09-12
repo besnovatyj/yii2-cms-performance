@@ -12,19 +12,16 @@ namespace Besnovatyj\Performance\services\manage;
 use Besnovatyj\Meta\Meta;
 use Besnovatyj\Performance\entities\performance\Image;
 use Besnovatyj\Performance\entities\performance\Performance;
-use Besnovatyj\Performance\entities\performance\TagAssignment;
-use Besnovatyj\Performance\entities\Tag;
 use Besnovatyj\Performance\forms\backend\performance\PerformanceForm;
 use Besnovatyj\Performance\repositories\PerformanceRepository;
-use Besnovatyj\Performance\repositories\TagRepository;
 use Besnovatyj\Performance\repositories\TaxonomyRepository;
+use Besnovatyj\Tags\services\TagAssigner;
 use DomainException;
 use ReflectionException;
 use Throwable;
 use Yii;
 use yii\db\Exception;
 use yii\db\StaleObjectException;
-use yii\helpers\Inflector;
 
 /**
  * Сервис управления спектаклями.
@@ -37,12 +34,13 @@ class PerformanceManageService
 {
     private PerformanceRepository $performances;
     private TaxonomyRepository $taxonomies;
-    private TagRepository $tags;
+    /** Теги — общий словарь модуля Tags: связи пишет только он, slug из имени выводит его форма. */
+    private TagAssigner $tags;
 
     public function __construct(
         PerformanceRepository $performances,
         TaxonomyRepository    $taxonomies,
-        TagRepository         $tags
+        TagAssigner           $tags
     )
     {
         $this->performances = $performances;
@@ -80,7 +78,7 @@ class PerformanceManageService
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $this->performances->save($performance);
-            $this->assignTags($performance, $form->tags->newTagsNames);
+            $this->tags->sync(Performance::tagType(), (int)$performance->id, $form->tags->items);
             $transaction->commit();
             return $performance;
         } catch (Throwable $e) {
@@ -122,8 +120,7 @@ class PerformanceManageService
         try {
             $this->performances->save($performance);
 
-            $this->revokeTags($performance);
-            $this->assignTags($performance, $form->tags->newTagsNames);
+            $this->tags->sync(Performance::tagType(), (int)$performance->id, $form->tags->items);
 
             $transaction->commit();
         } catch (Throwable $e) {
@@ -141,7 +138,8 @@ class PerformanceManageService
 
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $this->revokeTags($performance);
+            // Внешнего ключа на спектакль у общих связей тегов нет — снимаем явно, иначе останутся сироты.
+            $this->tags->detachAll(Performance::tagType(), (int)$performance->id);
             $this->removeImages($performance);
 
             $this->performances->remove($performance);
@@ -174,46 +172,6 @@ class PerformanceManageService
     }
 
     // ==================== Private methods ====================
-
-    /**
-     * @throws Exception
-     */
-    private function assignTags(Performance $performance, array $tagNames): void
-    {
-        foreach ($tagNames as $tagName) {
-            $slug = Inflector::slug($tagName);
-
-            $tag = $this->tags->findBySlug($slug);
-            if (!$tag) {
-                $tag = Tag::create($tagName, $slug);
-                $this->tags->save($tag);
-            }
-
-            $exists = TagAssignment::find()
-                ->andWhere(['performance_id' => $performance->id, 'tag_id' => $tag->id])
-                ->exists();
-
-            if ($exists) {
-                continue;
-            }
-
-            $assignment = new TagAssignment();
-            $assignment->performance_id = $performance->id;
-            $assignment->tag_id = $tag->id;
-
-            if (!$assignment->save()) {
-                throw new Exception('Failed to save tag assignment.');
-            }
-        }
-    }
-
-    /**
-     * @param Performance $performance
-     */
-    private function revokeTags(Performance $performance): void
-    {
-        TagAssignment::deleteAll(['performance_id' => $performance->id]);
-    }
 
     /**
      * @throws StaleObjectException

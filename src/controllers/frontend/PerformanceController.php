@@ -9,7 +9,7 @@ namespace Besnovatyj\Performance\controllers\frontend;
 
 use Besnovatyj\Performance\readModels\TaxonomyReadRepository;
 use Besnovatyj\Performance\readModels\PerformanceReadRepository;
-use Besnovatyj\Performance\readModels\TagReadRepository;
+use Besnovatyj\Tags\readModels\TagReadRepository;
 
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;

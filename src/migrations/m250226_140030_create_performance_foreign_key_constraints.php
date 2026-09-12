@@ -48,21 +48,7 @@ class m250226_140030_create_performance_foreign_key_constraints extends BaseMigr
             'SET NULL',
         );
 
-        // Связь с тегами
-        $this->createFKs(
-            m250226_140020_create_performance_tag_asgmt_table::TABLE_NAME,
-            'performance_id',
-            m250226_140015_create_performance_performances_table::TABLE_NAME,
-            'id',
-            'CASCADE',
-        );
-        $this->createFKs(
-            m250226_140020_create_performance_tag_asgmt_table::TABLE_NAME,
-            'tag_id',
-            m250226_140005_create_performance_tags_table::TABLE_NAME,
-            'id',
-            'CASCADE',
-        );
+        // Теги — в общем модуле Tags (полиморфная таблица связей без FK на спектакли), здесь их больше нет.
 
         Yii::$app->db->createCommand('SET foreign_key_checks = 1')->execute();
 

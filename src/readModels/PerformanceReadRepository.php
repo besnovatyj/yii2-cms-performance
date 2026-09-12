@@ -11,7 +11,8 @@ use Besnovatyj\Contracts\search\SearchDocument;
 use Besnovatyj\Contracts\sitemap\SitemapUrl;
 use Besnovatyj\Performance\entities\Taxonomy;
 use Besnovatyj\Performance\entities\performance\Performance;
-use Besnovatyj\Performance\entities\Tag;
+use Besnovatyj\Tags\entities\Tag;
+use Besnovatyj\Contracts\tags\TaggedItem;
 use Besnovatyj\TreeManager\Manager\TreeQueryScope;
 use yii\data\ActiveDataProvider;
 use yii\data\DataProviderInterface;
@@ -114,6 +115,53 @@ class PerformanceReadRepository
                 keywords: implode(' ', array_filter($keywords)),
                 // Для спектакля осмысленна дата премьеры, а не дата записи в базе; обе — строковые
                 // колонки DATE/DATETIME, поэтому только strtotime() (приведение (int) дало бы год).
+                date: $this->performanceTimestamp($performance),
+                image: $performance->mainImage?->getThumbUrl('file', 'frontend_list'),
+            );
+        }
+    }
+
+    /**
+     * Из переданных id — спектакли, доступные анониму (для счётчиков страницы тега и облака).
+     *
+     * @param int[] $ids
+     * @return int[]
+     */
+    public function visibleIds(array $ids): array
+    {
+        if ($ids === []) {
+            return [];
+        }
+        return array_map('intval', Performance::find()->alias('p')->visible('p')->andWhere(['p.id' => $ids])->select('p.id')->column());
+    }
+
+    /**
+     * Карточки спектаклей для страницы тега модуля Tags — только видимые, в порядке `$ids`.
+     *
+     * @param int[] $ids
+     * @return iterable<TaggedItem>
+     */
+    public function taggedItems(array $ids): iterable
+    {
+        if ($ids === []) {
+            return;
+        }
+
+        /** @var Performance[] $performances */
+        $performances = Performance::find()->alias('p')->visible('p')->with('mainImage')->andWhere(['p.id' => $ids])->indexBy('id')->all();
+
+        foreach ($ids as $id) {
+            $performance = $performances[$id] ?? null;
+            if ($performance === null) {
+                continue;
+            }
+            yield new TaggedItem(
+                type: Performance::tagType(),
+                entityId: (int)$performance->id,
+                route: '/Performance/performance/view',
+                params: ['id' => (int)$performance->id],
+                title: (string)$performance->title,
+                excerpt: null,
                 date: $this->performanceTimestamp($performance),
                 image: $performance->mainImage?->getThumbUrl('file', 'frontend_list'),
             );

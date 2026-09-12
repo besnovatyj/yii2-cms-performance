@@ -45,24 +45,4 @@ return [
             ],
         ],
     ],
-    // Tags
-    [
-        'label' => 'Tags',
-        'iconClass' => 'bi bi-tags me-1',
-        'url' => ['/Performance/backend/tag/index'],
-        'active' => static function () {
-            return str_contains(\Yii::$app->request->url, 'Performance/backend/tag');
-        },
-        '_meta' => [
-            'placements' => [
-                [
-                    'location' => 'left-sidebar',
-                    'group' => 'Performances',
-                    'groupIcon' => 'bi bi-person-video3',
-                    'priority' => 100,
-                    'groupPriority' => 100,
-                ],
-            ],
-        ],
-    ],
 ];
