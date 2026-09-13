@@ -7,6 +7,7 @@
 declare(strict_types=1);
 
 use Besnovatyj\Performance\Module;
+use Besnovatyj\Validators\SlugValidator;
 
 /**
  * Yii2-конфиг модуля для движка yiisoft/config (группа `common` — общий для всех приложений).
@@ -15,9 +16,11 @@ use Besnovatyj\Performance\Module;
  * Содержит регистрацию модуля. Меню (adminMenu) и миграции остаются вкладами modman. Значения берутся
  * из статических методов {@see Module} — единый источник, без дублирования.
  *
- * URL-правила фронтенда — вклад в `frontendUrlManager` группы `common` (см. README_Yii2_Modules.md).
- * Перенесены из захардкоженного `frontend/config/url-manager.php`; первый сегмент роута капитализирован
- * под реальный id модуля 'Performance'. Гейтятся modman.
+ * URL-правила фронтенда — вклад в `frontendUrlManager` группы `common` (компонент есть и во фронте, и в
+ * бэкенде). Плоская грамматика, общая для контентных модулей: `<prefix>` — список, `<prefix>/<id:\d+>` —
+ * материал (всегда число), `<prefix>/<slug>` — раздел (лист дерева, без предков: слаг уникален по таблице).
+ * Паттерны слагов — только из констант {@see SlugValidator}: STRICT (первый символ — буква) там, где слаг
+ * делит сегмент с `<id:\d+>`, ANY — в собственном сегменте (`tag/…`). Гейтятся modman.
  */
 return [
     'modules' => [
@@ -30,11 +33,11 @@ return [
     'components' => [
         'frontendUrlManager' => [
             'rules' => [
-                'performance'                                    => 'Performance/performance/index',
-                'performance/tag/<slug:[a-z][\w\-]*>'            => 'Performance/performance/tag', // slug с буквы — конвенция SlugValidator (модуль Tags)
-                'performance/taxonomy/<slug:[\w\-]+>/<page:\d+>' => 'Performance/performance/taxonomy', // <page> — пагинация
-                'performance/taxonomy/<slug:[\w\-]+>'            => 'Performance/performance/taxonomy',
-                'performance/view/<uuid:[\w\-]+>'                => 'Performance/performance/view',
+                'performance'                                                     => 'Performance/performance/index',
+                'performance/tag/<slug:' . SlugValidator::SLUG_ANY . '>'          => 'Performance/performance/tag',
+                'performance/<id:\d+>'                                            => 'Performance/performance/view',
+                'performance/<slug:' . SlugValidator::SLUG_STRICT . '>/<page:\d+>' => 'Performance/performance/taxonomy', // <page> — пагинация
+                'performance/<slug:' . SlugValidator::SLUG_STRICT . '>'            => 'Performance/performance/taxonomy',
             ],
         ],
     ],
