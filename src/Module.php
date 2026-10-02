@@ -11,6 +11,7 @@ use Besnovatyj\Contracts\module\DeclaresModule;
 use Besnovatyj\Contracts\module\ProvidesAdminMenu;
 use Besnovatyj\Contracts\module\ProvidesDirectories;
 use Besnovatyj\Contracts\module\ProvidesMigrations;
+use Besnovatyj\Contracts\module\ProvidesOptions;
 use Besnovatyj\Contracts\menu\MenuTarget;
 use Besnovatyj\Contracts\menu\MenuTargetProvider;
 use Besnovatyj\Contracts\search\SearchSource;
@@ -31,7 +32,7 @@ use Besnovatyj\TreeManager\Manager\TreeQueryScope;
 class Module extends CmsModule implements
     DeclaresModule, ProvidesAdminMenu,
     ProvidesDirectories,
-    ProvidesMigrations, MenuTargetProvider, SearchableProvider,
+    ProvidesMigrations, ProvidesOptions, MenuTargetProvider, SearchableProvider,
     SitemapProvider, SitemapFreshness, TaggableProvider
 {
     public const bool EDITABLE = true;
@@ -42,6 +43,7 @@ class Module extends CmsModule implements
     public static function isEditable(): bool { return self::EDITABLE; }
     public static function adminMenu(): array { return require __DIR__.'/config/adminMenu.php'; }
     public static function moduleConfig(): array { return require __DIR__.'/config/config.php'; }
+    public static function options(): array { return require __DIR__.'/config/options.php'; }
     public static function migrationPath(): string { return __DIR__.'/migrations'; }
     public static function migrationNamespace(): ?string { return __NAMESPACE__.'\\migrations'; }
     public static function directories(): array { return ['@static/origin/Performance','@static/cache/Performance'];}
