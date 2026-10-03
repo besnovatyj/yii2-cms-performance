@@ -4,6 +4,9 @@
  * Copyright (c) 2026 Besnovatyj. Licensed under the MIT License.
  */
 
+use Besnovatyj\Contracts\adminMenu\AdminMenuLocation;
+use Besnovatyj\Contracts\adminMenu\AdminMenuPlacement;
+
 return [
     // Performances list
     [
@@ -15,13 +18,13 @@ return [
         },
         '_meta' => [
             'placements' => [
-                [
-                    'location' => 'left-sidebar',
-                    'group' => 'Performances',
-                    'groupIcon' => 'bi bi-person-video3',
-                    'priority' => 100,
-                    'groupPriority' => 100,
-                ],
+                new AdminMenuPlacement(
+                    location: AdminMenuLocation::LeftSidebar,
+                    group: 'Performances',
+                    groupIcon: 'bi bi-person-video3',
+                    groupPriority: 100,
+                    priority: 100,
+                ),
             ],
         ],
     ],
@@ -35,13 +38,13 @@ return [
         },
         '_meta' => [
             'placements' => [
-                [
-                    'location' => 'left-sidebar',
-                    'group' => 'Performances',
-                    'groupIcon' => 'bi bi-person-video3',
-                    'priority' => 100,
-                    'groupPriority' => 100,
-                ],
+                new AdminMenuPlacement(
+                    location: AdminMenuLocation::LeftSidebar,
+                    group: 'Performances',
+                    groupIcon: 'bi bi-person-video3',
+                    groupPriority: 100,
+                    priority: 100,
+                ),
             ],
         ],
     ],
