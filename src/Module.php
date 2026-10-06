@@ -22,6 +22,9 @@ use Besnovatyj\Contracts\sitemap\SitemapSection;
 use Besnovatyj\Contracts\sitemap\SitemapUrl;
 use Besnovatyj\Contracts\tags\TaggableProvider;
 use Besnovatyj\Contracts\tags\TagSource;
+use Besnovatyj\Contracts\upload\ThumbnailSource;
+use Besnovatyj\Contracts\upload\ThumbnailSourceProvider;
+use Besnovatyj\Performance\entities\performance\Image;
 use Besnovatyj\Performance\entities\performance\Performance;
 use Besnovatyj\Performance\entities\Taxonomy;
 use Besnovatyj\Performance\readModels\PerformanceReadRepository;
@@ -32,7 +35,7 @@ class Module extends CmsModule implements
     DeclaresModule, 
     ProvidesDirectories,
     ProvidesMigrations, ProvidesOptions, MenuTargetProvider, SearchableProvider,
-    SitemapProvider, SitemapFreshness, TaggableProvider
+    SitemapProvider, SitemapFreshness, TaggableProvider, ThumbnailSourceProvider
 {
     public const bool EDITABLE = true;
     public const string MODULE_ID = 'Performance';
@@ -78,6 +81,19 @@ class Module extends CmsModule implements
     private function taxonomySlugMap(): array
     {
         return (new TreeQueryScope(Taxonomy::class))->dropdownTree(keyAttribute: 'slug', indent: '— ');
+    }
+
+    /**
+     * Модели модуля с превью. Реализация {@see ThumbnailSourceProvider}; вызывается только модулем
+     * загрузок (сквозной прогрев превью), если он установлен.
+     *
+     * @return ThumbnailSource[]
+     */
+    public function thumbnailSources(): array
+    {
+        return [
+            new ThumbnailSource(Image::class, 'file', 'Изображения спектаклей'),
+        ];
     }
 
     /**

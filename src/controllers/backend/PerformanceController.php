@@ -81,6 +81,7 @@ class PerformanceController extends Controller
                     'set-main-image' => ['POST'],
                     'get-images'     => ['POST'],
                     'set-new-sort'   => ['POST'],
+                    'regenerate-thumbs' => ['POST'],
                 ],
             ],
         ];

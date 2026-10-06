@@ -9,6 +9,7 @@ use Besnovatyj\Performance\entities\performance\Performance;
 use Besnovatyj\Performance\forms\backend\search\PerformanceSearch;
 use Besnovatyj\Performance\helpers\PerformanceHelper;
 use Besnovatyj\Backend\Widgets\pagination\LinkPager;
+use Besnovatyj\Images\widgets\regenerate\RegenerateThumbsButton;
 use yii\data\ActiveDataProvider;
 use yii\helpers\Html;
 use yii\grid\GridView;
@@ -22,8 +23,9 @@ $this->title = 'Performances';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<p>
+<p class="d-flex flex-wrap align-items-center gap-2">
     <?= Html::a('Create', ['create'], ['class' => 'btn  btn-success']) ?>
+    <?= RegenerateThumbsButton::widget(['url' => ['regenerate-thumbs']]) ?>
 </p>
 
 <div class="card">
