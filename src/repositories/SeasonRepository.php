@@ -33,20 +33,28 @@ class SeasonRepository
     }
 
     /**
-     * Пересекается ли период с другим сезоном.
+     * Сезон, с которым пересекается период; null — пересечений нет.
+     *
+     * Отсутствующая дата закрытия — бесконечность: открытый сезон пересекается со всеми,
+     * что открываются после него, поэтому открытым может быть только последний сезон.
      *
      * @param DateTimeImmutable $start
-     * @param DateTimeImmutable $end
+     * @param DateTimeImmutable|null $end null — период открыт
      * @param int|null $exceptId сезон, который сравнивать не нужно (редактируемый)
-     * @return bool
+     * @return Season|null
      */
-    public function overlaps(DateTimeImmutable $start, DateTimeImmutable $end, ?int $exceptId = null): bool
+    public function findOverlapping(DateTimeImmutable $start, ?DateTimeImmutable $end, ?int $exceptId = null): ?Season
     {
-        return Season::find()
-            ->andWhere(['<=', 'start_date', $end->format('Y-m-d')])
-            ->andWhere(['>=', 'end_date', $start->format('Y-m-d')])
+        $query = Season::find()
+            ->andWhere(['or', ['end_date' => null], ['>=', 'end_date', $start->format('Y-m-d')]])
             ->andFilterWhere(['<>', 'id', $exceptId])
-            ->exists();
+            ->orderBy(['start_date' => SORT_ASC])
+            ->limit(1);
+        if ($end !== null) {
+            $query->andWhere(['<=', 'start_date', $end->format('Y-m-d')]);
+        }
+
+        return $query->one();
     }
 
     /**

@@ -41,7 +41,7 @@ final class DbSeasonCalendar implements SeasonCalendar
         return $this->memo[$key] = $season === null ? null : new SeasonPeriod(
             (string)$season->name,
             new DateTimeImmutable((string)$season->start_date),
-            new DateTimeImmutable((string)$season->end_date),
+            $season->isOpen() ? null : new DateTimeImmutable((string)$season->end_date),
         );
     }
 }

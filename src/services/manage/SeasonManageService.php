@@ -19,6 +19,7 @@ use yii\db\Exception;
  * Сервис управления театральными сезонами.
  *
  * Сезоны не пересекаются: иначе «сезон, к которому относится дата», был бы неоднозначен.
+ * Сезон без даты закрытия открыт до бесконечности, поэтому открытым может быть только последний.
  */
 class SeasonManageService
 {
@@ -70,8 +71,17 @@ class SeasonManageService
      */
     private function guardOverlap(SeasonForm $form, ?int $exceptId): void
     {
-        if ($this->seasons->overlaps($form->start(), $form->end(), $exceptId)) {
-            throw new DomainException('Сезон пересекается с другим сезоном.');
+        $other = $this->seasons->findOverlapping($form->start(), $form->end(), $exceptId);
+        if ($other === null) {
+            return;
         }
+
+        if ($other->isOpen() && $other->start_date < $form->start()->format('Y-m-d')) {
+            throw new DomainException('Сезон «' . $other->name . '» ещё открыт: сначала задайте дату его закрытия.');
+        }
+        if ($form->end() === null) {
+            throw new DomainException('Открытым может быть только последний сезон: после этого уже есть сезон «' . $other->name . '». Задайте дату закрытия.');
+        }
+        throw new DomainException('Сезон пересекается с сезоном «' . $other->name . '».');
     }
 }

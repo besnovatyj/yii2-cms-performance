@@ -38,10 +38,11 @@ class SeasonForm extends BaseForm
     public function rules(): array
     {
         return [
-            [['name', 'start_date', 'end_date'], 'required'],
+            [['name', 'start_date'], 'required'],
             [['name'], 'string', 'max' => 64],
             [['start_date', 'end_date'], 'date', 'format' => 'php:Y-m-d'],
             [['end_date'], 'compare', 'compareAttribute' => 'start_date', 'operator' => '>=', 'type' => 'string', 'message' => 'Сезон не может закрыться раньше, чем откроется.'],
+            [['end_date'], 'default', 'value' => null],
         ];
     }
 
@@ -54,11 +55,11 @@ class SeasonForm extends BaseForm
     }
 
     /**
-     * @return DateTimeImmutable
+     * @return DateTimeImmutable|null null — дата закрытия ещё не назначена
      */
-    public function end(): DateTimeImmutable
+    public function end(): ?DateTimeImmutable
     {
-        return new DateTimeImmutable((string)$this->end_date);
+        return ($this->end_date === null || $this->end_date === '') ? null : new DateTimeImmutable($this->end_date);
     }
 
     /**
@@ -80,6 +81,7 @@ class SeasonForm extends BaseForm
     {
         return [
             'name' => 'Например, «2025/2026».',
+            'end_date' => 'Пусто — сезон открыт, дата закрытия ещё не назначена. Открытым может быть только последний сезон.',
         ];
     }
 }

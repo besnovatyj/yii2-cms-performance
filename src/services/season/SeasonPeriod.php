@@ -18,12 +18,12 @@ final readonly class SeasonPeriod
     /**
      * @param string $name
      * @param DateTimeImmutable $start дата открытия
-     * @param DateTimeImmutable $end дата закрытия
+     * @param DateTimeImmutable|null $end дата закрытия; null — сезон открыт, дата ещё не назначена
      */
     public function __construct(
-        public string            $name,
-        public DateTimeImmutable $start,
-        public DateTimeImmutable $end,
+        public string             $name,
+        public DateTimeImmutable  $start,
+        public ?DateTimeImmutable $end,
     )
     {
     }

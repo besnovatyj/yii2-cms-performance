@@ -6,6 +6,7 @@
 
 use Besnovatyj\Backend\Widgets\grid\ActionColumn;
 use Besnovatyj\Backend\Widgets\pagination\LinkPager;
+use Besnovatyj\Performance\entities\season\Season;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
 use yii\helpers\Html;
@@ -29,6 +30,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <p class="text-secondary small">
             От сезонов витрины отсчитывают периоды «к открытию сезона» и «по закрытие сезона».
             Дата в межсезонье относится к закрывшемуся сезону, пока не откроется следующий.
+            Дату закрытия можно назначить позже: пока её нет, сезон открыт, и граница «по закрытие
+            сезона» не ограничивает премьеры сверху. Открытым может быть только последний сезон.
         </p>
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
@@ -36,7 +39,14 @@ $this->params['breadcrumbs'][] = $this->title;
             'columns' => [
                 'name:text:Название',
                 'start_date:date:Открытие',
-                'end_date:date:Закрытие',
+                [
+                    'attribute' => 'end_date',
+                    'label' => 'Закрытие',
+                    'value' => static fn(Season $model): string => $model->isOpen()
+                        ? Html::tag('span', 'открыт, дата не назначена', ['class' => 'badge bg-info text-dark'])
+                        : Yii::$app->formatter->asDate($model->end_date),
+                    'format' => 'raw',
+                ],
                 [
                     'class' => ActionColumn::class,
                     'template' => '{update} {delete}',

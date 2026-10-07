@@ -32,8 +32,8 @@ class m250226_140020_create_performance_seasons_table extends BaseMigration
                 ->comment('Название сезона'),
             'start_date' => $this->date()->notNull()
                 ->comment('Дата открытия сезона'),
-            'end_date' => $this->date()->notNull()
-                ->comment('Дата закрытия сезона'),
+            'end_date' => $this->date()->null()
+                ->comment('Дата закрытия сезона (null = сезон открыт, дата ещё не назначена)'),
         ], $this->tableOptions);
         $this->addCommentOnTable(static::TABLE_NAME, 'Театральные сезоны');
 

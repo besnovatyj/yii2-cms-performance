@@ -90,14 +90,21 @@ final readonly class PeriodResolver
     /**
      * Закрытие текущего сезона; без сезонов — сегодняшний день.
      *
+     * Дата закрытия открытого сезона ещё не назначена — верхней границы нет: всё, что
+     * объявлено после открытия, считается премьерами этого сезона.
+     *
      * @param DateTimeImmutable $today
      * @param string[] $warnings
-     * @return DateTimeImmutable
+     * @return DateTimeImmutable|null
      */
-    private function seasonEnd(DateTimeImmutable $today, array &$warnings): DateTimeImmutable
+    private function seasonEnd(DateTimeImmutable $today, array &$warnings): ?DateTimeImmutable
     {
         $season = $this->seasons->seasonOf($today);
         if ($season !== null) {
+            if ($season->end === null) {
+                $warnings[] = 'У сезона «' . $season->name . '» не задана дата закрытия: верхней границы нет, '
+                    . 'попадают все объявленные премьеры.';
+            }
             return $season->end;
         }
 

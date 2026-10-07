@@ -36,7 +36,7 @@ $dateWidget = [
                 <?= $form->field($model, 'start_date')->widget(DateTimeWidget::class, $dateWidget) ?>
             </div>
             <div class="col-md-4">
-                <?= $form->field($model, 'end_date')->widget(DateTimeWidget::class, $dateWidget) ?>
+                <?= $form->field($model, 'end_date')->widget(DateTimeWidget::class, ['clearable' => true] + $dateWidget) ?>
             </div>
         </div>
     </div>
