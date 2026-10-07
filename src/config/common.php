@@ -7,6 +7,8 @@
 declare(strict_types=1);
 
 use Besnovatyj\Performance\Module;
+use Besnovatyj\Performance\services\season\DbSeasonCalendar;
+use Besnovatyj\Performance\services\season\SeasonCalendar;
 use Besnovatyj\Validators\SlugValidator;
 
 /**
@@ -28,6 +30,13 @@ return [
             ['class' => Module::class],
             Module::moduleConfig(),
         ),
+    ],
+    // Глобально и лениво: виджет витрины зовут из темы и шорткодов, когда модуль может быть не
+    // инициализирован, а config/container.php грузится только при инициализации модуля.
+    'container' => [
+        'singletons' => [
+            SeasonCalendar::class => DbSeasonCalendar::class,
+        ],
     ],
     'components' => [
         'frontendUrlManager' => [

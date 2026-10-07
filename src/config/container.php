@@ -10,6 +10,7 @@ declare(strict_types=1);
 use Besnovatyj\Meta\Meta;
 use Besnovatyj\Performance\entities\Taxonomy;
 use Besnovatyj\Performance\repositories\PerformanceRepository;
+use Besnovatyj\Performance\repositories\ShowcaseRepository;
 use Besnovatyj\TreeManager\Manager\entities\Node;
 use Besnovatyj\TreeManager\Manager\forms\TreeNodeFormInterface;
 use Besnovatyj\TreeManager\Manager\TreeManager;
@@ -50,11 +51,14 @@ return function (\yii\di\Container $container): void {
                 );
                 return $node;
             },
-            deleteGuard: function (Node $node) use ($performances): void {
+            deleteGuard: function (Node $node) use ($performances, $container): void {
                 /** @var Taxonomy $node */
                 // TODO нет проверки на запрет удаления родительской, если к дочерней привязаны элементы
                 if ($performances->existsByMainTaxonomy($node->id)) {
                     throw new DomainException('Unable to remove taxonomy with performances.');
+                }
+                if ($container->get(ShowcaseRepository::class)->existsByTaxonomy($node->id)) {
+                    throw new DomainException('Раздел используется витриной спектаклей: смените раздел витрины.');
                 }
             },
         );
