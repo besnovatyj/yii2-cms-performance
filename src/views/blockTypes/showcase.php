@@ -42,6 +42,6 @@ $moreUrl = $block->linkUrl($data['more']);
     <?php endif; ?>
     <?= $cards ?>
     <?php if ($moreUrl !== '' && $data['moreLabel'] !== ''): ?>
-        <p class="mt-3"><?= Html::a(Html::encode($data['moreLabel']), $moreUrl) ?></p>
+        <p class="mt-3"><?= Html::a(Html::encode($data['moreLabel']), $moreUrl, $block->linkOptions($data['more'])) ?></p>
     <?php endif; ?>
 </section>
