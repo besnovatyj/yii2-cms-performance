@@ -6,7 +6,11 @@
 
 namespace Besnovatyj\Performance;
 
+use Besnovatyj\Contracts\block\BlockType;
+use Besnovatyj\Contracts\block\BlockTypeProvider;
 use Besnovatyj\Kernel\module\CmsModule;
+use Besnovatyj\Performance\blocks\ShowcaseBlockType;
+use Yii;
 use Besnovatyj\Contracts\module\DeclaresModule;
 use Besnovatyj\Contracts\module\ProvidesDirectories;
 use Besnovatyj\Contracts\module\ProvidesMigrations;
@@ -35,7 +39,7 @@ class Module extends CmsModule implements
     DeclaresModule, 
     ProvidesDirectories,
     ProvidesMigrations, ProvidesOptions, MenuTargetProvider, SearchableProvider,
-    SitemapProvider, SitemapFreshness, TaggableProvider, ThumbnailSourceProvider
+    SitemapProvider, SitemapFreshness, TaggableProvider, ThumbnailSourceProvider, BlockTypeProvider
 {
     public const bool EDITABLE = true;
     public const string MODULE_ID = 'Performance';
@@ -81,6 +85,20 @@ class Module extends CmsModule implements
     private function taxonomySlugMap(): array
     {
         return (new TreeQueryScope(Taxonomy::class))->dropdownTree(keyAttribute: 'slug', indent: '— ');
+    }
+
+    /**
+     * Типы блоков модуля для модуля блоков. Реализация {@see BlockTypeProvider}; вызывается только
+     * модулем блоков, если он установлен. Полный id типа — `Performance:showcase`.
+     *
+     * @return array<string, BlockType>
+     */
+    public function blockTypes(): array
+    {
+        /** @var ShowcaseBlockType $showcase */
+        $showcase = Yii::$container->get(ShowcaseBlockType::class);
+
+        return [ShowcaseBlockType::ID => $showcase->definition()];
     }
 
     /**
