@@ -12,7 +12,6 @@ use Besnovatyj\Performance\entities\performance\Image;
 use Besnovatyj\Performance\entities\showcase\Showcase;
 use Besnovatyj\Performance\entities\showcase\ShowcaseItem;
 use Besnovatyj\Performance\forms\backend\showcase\ShowcaseForm;
-use Besnovatyj\Performance\readModels\ShowcaseReadRepository;
 use Besnovatyj\Performance\repositories\NotFoundException;
 use Besnovatyj\Performance\repositories\PerformanceRepository;
 use Besnovatyj\Performance\repositories\ShowcaseRepository;
@@ -26,9 +25,6 @@ use yii\db\Exception;
  * Элементы адресуются парой «витрина + спектакль», а не id элемента: у витрины по правилу
  * элемента может ещё не быть — он заводится при первой поправке и удаляется, когда поправок
  * не осталось.
- *
- * Правка самой витрины (код, название, статус, удаление) сбрасывает кэш списка витрин
- * ({@see ShowcaseReadRepository::options()}): по нему строится поле выбора витрины в блоке.
  */
 class ShowcaseManageService
 {
@@ -48,7 +44,6 @@ class ShowcaseManageService
     {
         $showcase = Showcase::create((string)$form->code, (string)$form->name, $form->sort, $form->rule());
         $this->showcases->save($showcase);
-        ShowcaseReadRepository::invalidateOptions();
         return $showcase;
     }
 
@@ -63,7 +58,6 @@ class ShowcaseManageService
         $showcase = $this->showcases->get($id);
         $showcase->edit((string)$form->code, (string)$form->name, $form->sort, $form->rule());
         $this->showcases->save($showcase);
-        ShowcaseReadRepository::invalidateOptions();
     }
 
     /**
@@ -76,7 +70,6 @@ class ShowcaseManageService
         $showcase = $this->showcases->get($id);
         $showcase->activate();
         $this->showcases->save($showcase);
-        ShowcaseReadRepository::invalidateOptions();
     }
 
     /**
@@ -89,7 +82,6 @@ class ShowcaseManageService
         $showcase = $this->showcases->get($id);
         $showcase->draft();
         $this->showcases->save($showcase);
-        ShowcaseReadRepository::invalidateOptions();
     }
 
     /**
@@ -100,7 +92,6 @@ class ShowcaseManageService
     public function remove(int $id): void
     {
         $this->showcases->remove($this->showcases->get($id));
-        ShowcaseReadRepository::invalidateOptions();
     }
 
     /**

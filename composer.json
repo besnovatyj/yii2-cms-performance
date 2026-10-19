@@ -53,6 +53,9 @@
     "besnovatyj/yii2-cms-tags": "^1.0",
     "besnovatyj/yii2-cms-validators": "^1.0"
   },
+  "conflict": {
+    "besnovatyj/yii2-cms-blocks": "<2.1"
+  },
   "require-dev": {
     "roave/security-advisories": "dev-latest"
   },
